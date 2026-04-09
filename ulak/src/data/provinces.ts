@@ -74,23 +74,30 @@ function slug(name: string) {
     .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
-function rnd(min: number, max: number, dec = 0): number {
-  const v = Math.random() * (max - min) + min;
+// Deterministik pseudo-random: plaka koduna dayalı, her render'da aynı sonuç
+function seededRnd(seed: number, min: number, max: number, dec = 0): number {
+  const x = Math.sin(seed * 9301 + 49297) * 233280;
+  const r = x - Math.floor(x); // 0-1 arası deterministik
+  const v = r * (max - min) + min;
   return dec ? +v.toFixed(dec) : Math.round(v);
 }
 
-// Seçim sonuçları üret
-function genElection(winner: string, winnerPct: number) {
+// Seçim sonuçları üret (deterministik)
+function genElection(winner: string, winnerPct: number, seed: number) {
   const parties = ["AKP", "CHP", "MHP", "IYI", "DEM"];
   const results: { party: string; pct: number; color: string }[] = [];
   let remaining = 1 - winnerPct;
 
   results.push({ party: winner, pct: winnerPct, color: P[winner as keyof typeof P] || P.DIGER });
 
+  let i = 1;
   for (const p of parties.filter(x => x !== winner)) {
-    const pct = +(remaining * Math.random() * 0.6).toFixed(3);
+    const r = Math.sin((seed + i) * 9301 + 49297) * 233280;
+    const factor = (r - Math.floor(r)) * 0.6;
+    const pct = +(remaining * factor).toFixed(3);
     remaining -= pct;
     if (pct > 0.01) results.push({ party: p, pct, color: P[p as keyof typeof P] || P.DIGER });
+    i++;
   }
   if (remaining > 0.01) results.push({ party: "Diğer", pct: +remaining.toFixed(3), color: P.DIGER });
   return results.sort((a, b) => b.pct - a.pct);
@@ -121,59 +128,62 @@ const raw: [number, string, number, string, string, number, number, number, numb
   [20,"Denizli",1056332,"ege","CHP",37.77,29.09,11868,0.41],
 ];
 
-export const provincesData: ProvinceData[] = raw.map(([plate, name, pop, region, winner, lat, lng, area, winPct]) => ({
-  plate,
-  name,
-  slug: slug(name),
-  population: pop,
-  region,
-  area_km2: area,
-  center: [lng, lat],
-  election2024Winner: winner,
-  election2024Color: P[winner as keyof typeof P] || P.DIGER,
-  election2024Results: genElection(winner, winPct),
-  participation2024: rnd(0.75, 0.92, 3),
-  demographics: {
-    medianAge: rnd(28, 42, 1),
-    universityPct: rnd(0.08, 0.48, 3),
-    highSchoolPct: rnd(0.15, 0.35, 3),
-    primaryPct: rnd(0.1, 0.35, 3),
-    illiteratePct: rnd(0.01, 0.08, 3),
-    maleRatio: rnd(0.48, 0.52, 3),
-    sesLevel: ["A", "B", "C1", "C2", "D"][rnd(0, 4)],
-    migrationNet: rnd(-20000, 50000),
-  },
-  economy: {
-    avgRent2plus1: rnd(5000, 30000),
-    avgSqmSale: rnd(15000, 120000),
-    businessCount: rnd(3000, 200000),
-    unemploymentRate: rnd(0.06, 0.22, 3),
-    newBusinesses: rnd(100, 5000),
-    closedBusinesses: rnd(50, 3000),
-  },
-  safety: {
-    overallScore: rnd(40, 90),
-    trend: (["improving", "stable", "declining"] as const)[rnd(0, 2)],
-  },
-  livability: {
-    overallScore: rnd(35, 85),
-    safetyScore: rnd(30, 90),
-    educationScore: rnd(30, 90),
-    healthScore: rnd(30, 90),
-    transportScore: rnd(20, 90),
-    economyScore: rnd(30, 85),
-    environmentScore: rnd(25, 85),
-  },
-  socialPulse: {
-    sentimentScore: rnd(-0.5, 0.7, 2),
-    mentionCount24h: rnd(100, 15000),
-    trendingTopics: [
-      ["ulaşım", "trafik", "metro", "belediye", "park"][rnd(0, 4)],
-      ["kira", "fiyatlar", "esnaf", "iş", "ekonomi"][rnd(0, 4)],
-      ["eğitim", "sınav", "okul", "üniversite", "öğrenci"][rnd(0, 4)],
-    ],
-  },
-}));
+export const provincesData: ProvinceData[] = raw.map(([plate, name, pop, region, winner, lat, lng, area, winPct]) => {
+  const s = plate; // seed olarak plaka kodu
+  return {
+    plate,
+    name,
+    slug: slug(name),
+    population: pop,
+    region,
+    area_km2: area,
+    center: [lng, lat],
+    election2024Winner: winner,
+    election2024Color: P[winner as keyof typeof P] || P.DIGER,
+    election2024Results: genElection(winner, winPct, s),
+    participation2024: seededRnd(s + 100, 0.75, 0.92, 3),
+    demographics: {
+      medianAge: seededRnd(s + 10, 28, 42, 1),
+      universityPct: seededRnd(s + 11, 0.08, 0.48, 3),
+      highSchoolPct: seededRnd(s + 12, 0.15, 0.35, 3),
+      primaryPct: seededRnd(s + 13, 0.1, 0.35, 3),
+      illiteratePct: seededRnd(s + 14, 0.01, 0.08, 3),
+      maleRatio: seededRnd(s + 15, 0.48, 0.52, 3),
+      sesLevel: ["A", "B", "C1", "C2", "D"][seededRnd(s + 16, 0, 4)],
+      migrationNet: seededRnd(s + 17, -20000, 50000),
+    },
+    economy: {
+      avgRent2plus1: seededRnd(s + 20, 5000, 30000),
+      avgSqmSale: seededRnd(s + 21, 15000, 120000),
+      businessCount: seededRnd(s + 22, 3000, 200000),
+      unemploymentRate: seededRnd(s + 23, 0.06, 0.22, 3),
+      newBusinesses: seededRnd(s + 24, 100, 5000),
+      closedBusinesses: seededRnd(s + 25, 50, 3000),
+    },
+    safety: {
+      overallScore: seededRnd(s + 30, 40, 90),
+      trend: (["improving", "stable", "declining"] as const)[seededRnd(s + 31, 0, 2)],
+    },
+    livability: {
+      overallScore: seededRnd(s + 40, 35, 85),
+      safetyScore: seededRnd(s + 41, 30, 90),
+      educationScore: seededRnd(s + 42, 30, 90),
+      healthScore: seededRnd(s + 43, 30, 90),
+      transportScore: seededRnd(s + 44, 20, 90),
+      economyScore: seededRnd(s + 45, 30, 85),
+      environmentScore: seededRnd(s + 46, 25, 85),
+    },
+    socialPulse: {
+      sentimentScore: seededRnd(s + 50, -0.5, 0.7, 2),
+      mentionCount24h: seededRnd(s + 51, 100, 15000),
+      trendingTopics: [
+        ["ulaşım", "trafik", "metro", "belediye", "park"][seededRnd(s + 52, 0, 4)],
+        ["kira", "fiyatlar", "esnaf", "iş", "ekonomi"][seededRnd(s + 53, 0, 4)],
+        ["eğitim", "sınav", "okul", "üniversite", "öğrenci"][seededRnd(s + 54, 0, 4)],
+      ],
+    },
+  };
+});
 
 // İsimden il bul
 export function findProvince(slugOrName: string): ProvinceData | undefined {
