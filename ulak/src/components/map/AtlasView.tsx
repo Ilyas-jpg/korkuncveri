@@ -93,7 +93,25 @@ export function AtlasView() {
         },
       });
 
-      // İl sınır çizgileri — keskin ve belirgin
+      // İl sınır dış glow — derinlik hissi
+      map.addLayer({
+        id: "province-border-glow",
+        type: "line",
+        source: "provinces",
+        paint: {
+          "line-color": "#00D4AA",
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            4, 3,
+            7, 5,
+            10, 7,
+          ],
+          "line-opacity": 0.08,
+          "line-blur": 3,
+        },
+      });
+
+      // İl sınır çizgileri — keskin, sert, net
       map.addLayer({
         id: "province-border",
         type: "line",
@@ -102,22 +120,28 @@ export function AtlasView() {
           "line-color": "#00D4AA",
           "line-width": [
             "interpolate", ["linear"], ["zoom"],
-            4, 0.8,
-            7, 1.5,
-            10, 2.5,
+            4, 1.2,
+            7, 2,
+            10, 3,
+            14, 4,
           ],
-          "line-opacity": 0.7,
+          "line-opacity": 0.85,
         },
       });
 
-      // Hover sınır — parlak ve kalın
+      // Hover sınır — parlak, kalın, dikkat çekici
       map.addLayer({
         id: "province-border-hover",
         type: "line",
         source: "provinces",
         paint: {
           "line-color": "#00FFCC",
-          "line-width": 3.5,
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            4, 2.5,
+            7, 4,
+            10, 5,
+          ],
           "line-opacity": 1,
         },
         filter: ["==", ["get", "name"], ""],
