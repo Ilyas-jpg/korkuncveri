@@ -15,7 +15,8 @@ export type MapLayer =
   | "safety"
   | "education"
   | "health"
-  | "social";
+  | "social"
+  | "traffic";
 
 export function AtlasView() {
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -71,68 +72,145 @@ export function AtlasView() {
     });
 
     // Türkiye il sınırlarını yükle
-    map.on("load", () => {
-      // İl sınırları GeoJSON — gerçek veri bağlandığında güncellenecek
-      // Şimdilik boş source ekle
+    map.on("load", async () => {
+      // GeoJSON'ı fetch et
+      const res = await fetch("/geo/turkey-provinces-v2.json");
+      const geojson = await res.json();
+
       map.addSource("provinces", {
         type: "geojson",
-        data: { type: "FeatureCollection", features: [] },
+        data: geojson,
       });
 
+      // İl dolgu — seçim kazanan partiye göre renklendir
       map.addLayer({
         id: "province-fill",
         type: "fill",
         source: "provinces",
         paint: {
-          "fill-color": "#00D4AA",
-          "fill-opacity": 0.08,
+          "fill-color": ["get", "election_2024_color"],
+          "fill-opacity": 0.2,
         },
       });
 
+      // İl sınır çizgileri — keskin ve belirgin
       map.addLayer({
         id: "province-border",
         type: "line",
         source: "provinces",
         paint: {
           "line-color": "#00D4AA",
-          "line-width": 1,
-          "line-opacity": 0.4,
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            4, 0.8,
+            7, 1.5,
+            10, 2.5,
+          ],
+          "line-opacity": 0.7,
         },
       });
 
+      // Hover sınır — parlak ve kalın
       map.addLayer({
         id: "province-border-hover",
         type: "line",
         source: "provinces",
         paint: {
-          "line-color": "#00D4AA",
-          "line-width": 2.5,
-          "line-opacity": 0.8,
+          "line-color": "#00FFCC",
+          "line-width": 3.5,
+          "line-opacity": 1,
         },
-        filter: ["==", "name", ""],
+        filter: ["==", ["get", "name"], ""],
+      });
+
+      // Hover dolgu
+      map.addLayer({
+        id: "province-fill-hover",
+        type: "fill",
+        source: "provinces",
+        paint: {
+          "fill-color": "#00D4AA",
+          "fill-opacity": 0.15,
+        },
+        filter: ["==", ["get", "name"], ""],
+      });
+
+      // Popup referansı
+      const popup = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 12,
       });
 
       // İl hover efekti
       map.on("mousemove", "province-fill", (e) => {
         if (e.features?.[0]) {
           map.getCanvas().style.cursor = "pointer";
-          const name = e.features[0].properties?.name ?? "";
-          map.setFilter("province-border-hover", ["==", "name", name]);
+          const props = e.features[0].properties;
+          const name = props?.name ?? "";
+
+          map.setFilter("province-border-hover", ["==", ["get", "name"], name]);
+          map.setFilter("province-fill-hover", ["==", ["get", "name"], name]);
+
+          // Popup göster — MapLibre properties'leri string olabilir
+          const pop = Number(props?.population) || 0;
+          const popStr = pop.toLocaleString("tr-TR");
+          const winner = String(props?.election_2024_winner ?? "");
+          const winnerColor = String(props?.election_2024_color ?? "#fff");
+          const medAge = props?.median_age ? Number(props.median_age).toFixed(1) : "—";
+          const plate = String(props?.plate_code ?? "");
+
+          popup
+            .setLngLat(e.lngLat)
+            .setHTML(`
+              <div style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">
+                ${name}
+                <span style="opacity: 0.4; font-size: 11px; font-weight: 400; margin-left: 4px;">${plate}</span>
+              </div>
+              <div style="font-size: 12px; display: flex; flex-direction: column; gap: 3px; color: #94A3B8;">
+                <span>👥 Nüfus: <b style="color: #F1F5F9;">${popStr}</b></span>
+                <span>🗳️ 2024: <b style="color: ${winnerColor};">${winner}</b></span>
+                <span>📊 Medyan yaş: <b style="color: #F1F5F9;">${medAge}</b></span>
+              </div>
+            `)
+            .addTo(map);
         }
       });
 
       map.on("mouseleave", "province-fill", () => {
         map.getCanvas().style.cursor = "";
-        map.setFilter("province-border-hover", ["==", "name", ""]);
+        map.setFilter("province-border-hover", ["==", ["get", "name"], ""]);
+        map.setFilter("province-fill-hover", ["==", ["get", "name"], ""]);
+        popup.remove();
       });
 
-      // İl tıklama
+      // İl tıklama → sidebar aç
       map.on("click", "province-fill", (e) => {
         if (e.features?.[0]) {
           const props = e.features[0].properties;
           if (props?.slug) {
             setSelectedRegion(props.slug);
             setSidebarOpen(true);
+
+            // Tıklanan ile zoom
+            const bounds = new maplibregl.LngLatBounds();
+            const geom = e.features[0].geometry;
+            if (geom.type === "MultiPolygon") {
+              for (const poly of (geom as GeoJSON.MultiPolygon).coordinates) {
+                for (const ring of poly) {
+                  for (const coord of ring) {
+                    bounds.extend(coord as [number, number]);
+                  }
+                }
+              }
+            } else if (geom.type === "Polygon") {
+              for (const ring of (geom as GeoJSON.Polygon).coordinates) {
+                for (const coord of ring) {
+                  bounds.extend(coord as [number, number]);
+                }
+              }
+            }
+            map.fitBounds(bounds, { padding: 60, duration: 800 });
           }
         }
       });
@@ -185,7 +263,7 @@ export function AtlasView() {
           {/* Sağ: Arama */}
           <div className="pointer-events-auto">
             <div
-              className="flex items-center gap-2 px-3 py-2 rounded-xl w-64"
+              className="flex items-center gap-2 px-3 py-2 rounded-sm w-64"
               style={{
                 background: "var(--color-bg-elevated)",
                 border: "1px solid var(--color-border)",
@@ -204,7 +282,7 @@ export function AtlasView() {
         {/* Alt sol: Zoom kontrolleri */}
         <div className="absolute bottom-6 left-4 flex flex-col gap-2 z-10">
           <div
-            className="flex flex-col rounded-xl overflow-hidden"
+            className="flex flex-col rounded-sm overflow-hidden"
             style={{
               background: "var(--color-bg-elevated)",
               border: "1px solid var(--color-border)",
@@ -229,7 +307,7 @@ export function AtlasView() {
 
           <button
             onClick={handleResetView}
-            className="p-2 rounded-xl hover:bg-[var(--color-bg-hover)] transition-colors"
+            className="p-2 rounded-sm hover:bg-[var(--color-bg-hover)] transition-colors"
             style={{
               background: "var(--color-bg-elevated)",
               border: "1px solid var(--color-border)",
@@ -242,7 +320,7 @@ export function AtlasView() {
 
         {/* Alt sağ: Zoom seviyesi */}
         <div
-          className="absolute bottom-6 right-4 px-3 py-1.5 rounded-lg text-xs font-medium z-10"
+          className="absolute bottom-6 right-4 px-3 py-1.5 rounded-sm text-xs font-medium z-10"
           style={{
             background: "var(--color-bg-elevated)",
             border: "1px solid var(--color-border)",
@@ -257,7 +335,7 @@ export function AtlasView() {
         {/* Sidebar toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="absolute top-4 right-[17rem] p-2 rounded-lg z-10 transition-all"
+          className="absolute top-4 right-[17rem] p-2 rounded-sm z-10 transition-all"
           style={{
             background: "var(--color-bg-elevated)",
             border: "1px solid var(--color-border)",

@@ -264,7 +264,7 @@ function StatCard({
 }) {
   return (
     <div
-      className="p-3 rounded-lg"
+      className="p-3 rounded-sm"
       style={{
         background: "var(--color-bg-tertiary)",
         border: "1px solid var(--color-border)",
@@ -292,7 +292,7 @@ function StatCard({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div
-      className="p-3 rounded-lg"
+      className="p-3 rounded-sm"
       style={{
         background: "var(--color-bg-tertiary)",
         border: "1px solid var(--color-border)",

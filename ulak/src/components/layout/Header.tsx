@@ -25,7 +25,7 @@ export function Header() {
           href="/"
           className="flex items-center gap-2.5 group"
         >
-          <div className="relative w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden"
+          <div className="relative w-8 h-8 rounded-sm flex items-center justify-center overflow-hidden"
                style={{ background: "var(--color-accent-primary)" }}>
             <span className="text-sm font-bold" style={{ color: "var(--color-bg-primary)", fontFamily: "var(--font-heading)" }}>
               U
@@ -49,7 +49,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-sm text-sm font-medium transition-all",
                   isActive
                     ? "text-[var(--color-accent-primary)] bg-[var(--color-accent-primary-muted)]"
                     : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
@@ -65,7 +65,7 @@ export function Header() {
         {/* Right */}
         <div className="flex items-center gap-2">
           <button
-            className="relative p-2 rounded-lg transition-all text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
+            className="relative p-2 rounded-sm transition-all text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
             aria-label="Bildirimler"
           >
             <Bell size={18} />
@@ -74,7 +74,7 @@ export function Header() {
 
           <Link
             href="/giris"
-            className="hidden sm:flex items-center px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
+            className="hidden sm:flex items-center px-4 py-1.5 rounded-sm text-sm font-semibold transition-all"
             style={{
               background: "var(--color-accent-primary)",
               color: "var(--color-bg-primary)",
@@ -85,7 +85,7 @@ export function Header() {
 
           {/* Mobile menu toggle */}
           <button
-            className="md:hidden p-2 rounded-lg text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]"
+            className="md:hidden p-2 rounded-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-hover)]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Menü"
           >
@@ -107,7 +107,7 @@ export function Header() {
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-all",
                   isActive
                     ? "text-[var(--color-accent-primary)] bg-[var(--color-accent-primary-muted)]"
                     : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-hover)]"
@@ -123,7 +123,7 @@ export function Header() {
           })}
           <Link
             href="/giris"
-            className="flex items-center justify-center mt-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
+            className="flex items-center justify-center mt-2 px-4 py-2.5 rounded-sm text-sm font-semibold"
             style={{ background: "var(--color-accent-primary)", color: "var(--color-bg-primary)" }}
           >
             Giriş Yap

@@ -134,7 +134,7 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-3 animate-fade-in-up" style={{ animationDelay: "300ms" }}>
               <Link
                 href="/atlas"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-sm text-base font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background: "var(--color-accent-primary)",
                   color: "var(--color-bg-primary)",
@@ -146,7 +146,7 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/analiz"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all hover:bg-[var(--color-bg-hover)]"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-sm text-base font-semibold transition-all hover:bg-[var(--color-bg-hover)]"
                 style={{
                   border: "1px solid var(--color-border)",
                   color: "var(--color-text-primary)",
@@ -161,7 +161,7 @@ export default function HomePage() {
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="p-4 rounded-xl text-center"
+                className="p-4 rounded-sm text-center"
                 style={{
                   background: "var(--color-bg-secondary)",
                   border: "1px solid var(--color-border)",
@@ -207,14 +207,14 @@ export default function HomePage() {
               return (
                 <div
                   key={f.title}
-                  className="group p-5 rounded-xl transition-all hover:-translate-y-1 hover:shadow-lg cursor-default"
+                  className="group p-5 rounded-sm transition-all hover:-translate-y-1 hover:shadow-lg cursor-default"
                   style={{
                     background: "var(--color-bg-secondary)",
                     border: "1px solid var(--color-border)",
                   }}
                 >
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center mb-4 transition-all group-hover:scale-110"
+                    className="w-10 h-10 rounded-sm flex items-center justify-center mb-4 transition-all group-hover:scale-110"
                     style={{ background: `${f.color}15`, color: f.color }}
                   >
                     <Icon size={20} />
@@ -264,14 +264,14 @@ export default function HomePage() {
               return (
                 <div
                   key={item.title}
-                  className="flex items-start gap-4 p-5 rounded-xl"
+                  className="flex items-start gap-4 p-5 rounded-sm"
                   style={{
                     background: "var(--color-bg-tertiary)",
                     border: "1px solid var(--color-border)",
                   }}
                 >
                   <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                    className="w-10 h-10 rounded-sm flex items-center justify-center shrink-0"
                     style={{
                       background: "var(--color-accent-primary-muted)",
                       color: "var(--color-accent-primary)",
@@ -298,7 +298,7 @@ export default function HomePage() {
       <section className="py-20 md:py-28">
         <div className="max-w-[1280px] mx-auto px-4 md:px-6">
           <div
-            className="relative overflow-hidden rounded-2xl p-8 md:p-12 text-center"
+            className="relative overflow-hidden rounded-sm p-8 md:p-12 text-center"
             style={{
               background: "var(--color-bg-secondary)",
               border: "1px solid var(--color-border)",
@@ -321,7 +321,7 @@ export default function HomePage() {
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   href="/kayit"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-sm text-base font-semibold transition-all hover:scale-[1.02]"
                   style={{
                     background: "var(--color-accent-primary)",
                     color: "var(--color-bg-primary)",
@@ -333,7 +333,7 @@ export default function HomePage() {
                 </Link>
                 <Link
                   href="/fiyatlar"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all hover:bg-[var(--color-bg-hover)]"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-sm text-base font-semibold transition-all hover:bg-[var(--color-bg-hover)]"
                   style={{
                     border: "1px solid var(--color-border)",
                     color: "var(--color-text-primary)",
