@@ -1,0 +1,106 @@
+/*
+ * ULAK — Design Tokens
+ *
+ * Renk paleti: Koyu lacivert zemin + turkuaz vurgu
+ * Gerekçe: Veri platformları dark-mode'da daha profesyonel ve okunabilir.
+ * Turkuaz-yeşil accent hem güven (finans) hem teknoloji (data) hissi verir.
+ * Endeksa'nın pembe-kırmızısından tamamen farklılaşır.
+ *
+ * Font: Space Grotesk (heading) + Inter (body — veri okunabilirliği için)
+ * JetBrains Mono (tablolar, sayısal veri)
+ */
+
+:root {
+  /* ─── RENKLER ─── */
+  --color-bg-primary: #06060B;
+  --color-bg-secondary: #0E0E16;
+  --color-bg-tertiary: #15151F;
+  --color-bg-elevated: #1C1C28;
+  --color-bg-hover: #222232;
+  --color-bg-active: #2A2A3C;
+
+  --color-accent-primary: #00D4AA;
+  --color-accent-primary-hover: #00E8BC;
+  --color-accent-primary-muted: rgba(0, 212, 170, 0.12);
+  --color-accent-secondary: #6366F1;
+  --color-accent-secondary-muted: rgba(99, 102, 241, 0.12);
+
+  --color-accent-warn: #F59E0B;
+  --color-accent-danger: #EF4444;
+  --color-accent-success: #10B981;
+  --color-accent-info: #3B82F6;
+
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  --color-text-disabled: #475569;
+
+  --color-border: #1E293B;
+  --color-border-hover: #334155;
+  --color-border-active: #475569;
+
+  /* ─── PARTİ RENKLERİ ─── */
+  --color-party-akp: #FF8C00;
+  --color-party-chp: #E30A17;
+  --color-party-mhp: #CC0000;
+  --color-party-iyi: #00BFFF;
+  --color-party-hdp: #8B008B;
+  --color-party-dem: #8B008B;
+  --color-party-ysp: #228B22;
+  --color-party-tip: #DC143C;
+  --color-party-diger: #808080;
+
+  /* ─── HEATMAP RENKLERİ ─── */
+  --heatmap-1: #0D1B2A;
+  --heatmap-2: #1B2838;
+  --heatmap-3: #1B4332;
+  --heatmap-4: #2D6A4F;
+  --heatmap-5: #40916C;
+  --heatmap-6: #52B788;
+  --heatmap-7: #74C69D;
+  --heatmap-8: #95D5B2;
+  --heatmap-9: #B7E4C7;
+  --heatmap-10: #D8F3DC;
+
+  /* ─── FONT (next/font CSS variable'ları layout.tsx'ten geliyor) ─── */
+  /* --font-heading, --font-body, --font-mono → next/font tarafından inject edilir */
+
+  /* ─── SPACING (8px grid) ─── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* ─── BORDER RADIUS ─── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* ─── SHADOW ─── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(0, 212, 170, 0.15);
+
+  /* ─── TRANSITION ─── */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ─── Z-INDEX ─── */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+}
